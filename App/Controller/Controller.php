@@ -6,25 +6,35 @@ class Controller
 {
     public function route():void
     {
-        if (isset($_GET['controller'])) {
-            switch ($_GET['controller']){
-                case 'page':
-                    //charger controleur page
-                    $pageController = new PageController();
-                    $pageController->route();
-                    break;
-
-                case 'book':
-                    //charger controleur book
-                    var_dump('On charge la page book');
-                    break;
-
-                default:
-                    //Erreur
-                    break;
+        try{
+            if (isset($_GET['controller'])) {
+                switch ($_GET['controller']){
+                    case 'page':
+                        //charger controleur page
+                        $pageController = new PageController();
+                        $pageController->route();
+                        break;
+    
+                    case 'book':
+                        $bookController = new BookController();
+                        $bookController->route();
+                        break;
+    
+                    default:
+                        throw new \Exception("Le controleur n'existe pas");
+                        break;
+                }
+            } else {
+                // Redirige vers la page d'accueil par défaut
+                $pageController = new PageController();
+                $pageController->home();
             }
-        } else {
-            //Charger la page d'accueil
+        } catch (\Exception $e){
+            $error = [
+                'error' => $e->getMessage()
+            ];
+
+            $this->render('errors/default', $error);
         }
     }
 
@@ -41,7 +51,10 @@ class Controller
                 require_once $filePath;
             }
         } catch(\Exception $e){
-            echo $e->getMessage();
+            $error = [
+                'error' => $e->getMessage()
+            ];
+            $this->render('errors/default', $error);
         }
 
 

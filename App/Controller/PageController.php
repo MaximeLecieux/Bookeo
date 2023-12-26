@@ -6,24 +6,32 @@ class PageController extends Controller
 {
     public function route():void
     {
-        if (isset($_GET['action'])) {
-            switch ($_GET['action']){
-                case 'about':
-                    //appeler la méthode about()
-                    $this->about();
-                    break;
+        try{
+            if (isset($_GET['action'])) {
+                switch ($_GET['action']){
+                    case 'about':
+                        //appeler la méthode about()
+                        $this->about();
+                        break;
+    
+                    case 'home':
+                        //appeler la méthode home
+                        $this->home();
+                        break;
+    
+                    default:
+                        throw new \Exception("Cette action n'existe pas");
+                        break;
+                }
+            } else {
+                throw new \Exception("Aucune action détectée");
+            }    
+        } catch(\Exception $e){
+            $error = [
+                'error' => $e->getMessage()
+            ];
 
-                case 'home':
-                    //appeler la méthode home
-                    var_dump('On appelle la méthode home');
-                    break;
-
-                default:
-                    //Erreur
-                    break;
-            }
-        } else {
-            //Charger la page d'accueil
+            $this->render('errors/default', $error);
         }
     }
 
@@ -35,5 +43,10 @@ class PageController extends Controller
         ];
 
         $this->render('page/about', $params);
+    }
+
+    protected function home()
+    {
+        $this->render('page/home');
     }
 }
